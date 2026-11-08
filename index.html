@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AT-RISK INTELLIGENCE</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>try{if(localStorage.getItem("ari-theme")==="light")document.documentElement.dataset.theme="light"}catch(e){}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+:root{--bg:#070b16;--sd:#0a1020;--cd:#0e1527;--cd2:#111a31;--bd:#1b2542;--tx:#e7ebf8;--mu:#8a94b4;--b:#4f8cff;--p:#9b6bff;--c:#22d3ee;--g:#34d399;--a:#fbbf24;--o:#fb923c;--r:#f87171;--pk:#f472b6;--hv:var(--hv);--hv2:var(--hv2);--ovl:#02050dcc;--fb:#0a1020aa;--sh:#0006;--glow:#1a2352;--nt:#b9c8ff;--pm:0%;--gl1:rgba(79,140,255,.17);--gl2:rgba(155,107,255,.08);color-scheme:dark}
+html[data-theme=light]{--bg:#f3f5fb;--sd:#fff;--cd:#fff;--cd2:#fbfcff;--bd:#e2e7f2;--tx:#141b34;--mu:#5b6788;--b:#3b6df0;--p:#7c4dff;--c:#0891b2;--g:#059669;--a:#b45309;--o:#c2410c;--r:#dc2626;--pk:#db2777;--hv:#0f172a0a;--hv2:#0f172a12;--ovl:#0f172a88;--fb:#ffffffcc;--sh:#1e2a5018;--glow:#dde6ff;--nt:#2c4a9e;--pm:45%;--gl1:rgba(59,109,240,.15);--gl2:rgba(124,77,255,.08);color-scheme:light}
+*{box-sizing:border-box;margin:0}html,body{height:100%}
+body{background:radial-gradient(900px 500px at 85% -10%,var(--glow) 0,transparent 60%),var(--bg);color:var(--tx);font:14px/1.5 Manrope,system-ui,sans-serif}
+button,select,input{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.app{display:flex;min-height:100%}
+aside{overflow-y:auto;width:236px;background:var(--sd);border-right:1px solid var(--bd);padding:20px 14px;position:sticky;top:0;height:100vh;flex:none;z-index:30;transition:transform .25s}
+.brand{display:flex;gap:10px;align-items:center;padding:0 6px 22px}.brand h1{font-size:13px;letter-spacing:.06em;font-weight:800}.brand small{color:var(--mu);font-size:11px}
+.logo{width:34px;height:34px;border-radius:10px;background:conic-gradient(from 200deg,var(--b),var(--p),var(--pk),var(--c),var(--b));box-shadow:0 0 18px #4f8cff66;flex:none}
+nav button{display:flex;width:100%;gap:11px;align-items:center;background:none;border:0;padding:9px 12px;border-radius:10px;color:var(--mu);margin-bottom:2px;text-align:left;transition:.15s}
+nav button:hover{background:var(--hv);color:var(--tx)}nav button.on{background:linear-gradient(90deg,#4f8cff33,#9b6bff1a);color:var(--tx);box-shadow:inset 2px 0 var(--b)}
+nav i{font-style:normal;width:18px;text-align:center}
+.col{flex:1;min-width:0;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+header h2{font-size:18px;font-weight:700;margin-right:auto}#burger{display:none;background:none;border:1px solid var(--bd);border-radius:8px;padding:4px 10px}
+.seg{display:flex;background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:3px}.seg button{background:none;border:0;padding:6px 14px;border-radius:8px;color:var(--mu);font-weight:600}
+.seg button.on{background:linear-gradient(135deg,var(--b),var(--p));color:#fff;box-shadow:0 0 14px #4f8cff55}
+select,input[type=search]{background:var(--cd);border:1px solid var(--bd);border-radius:8px;padding:6px 10px;min-width:0}select option{background:var(--cd)}
+.av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--c),var(--p));display:grid;place-items:center;font-weight:700;font-size:12px}
+.fbar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;padding:12px 24px;background:var(--fb);border-bottom:1px solid var(--bd)}
+.fl{display:flex;flex-direction:column;font-size:11px;color:var(--mu);gap:2px}.fl select,.fl input{width:140px}
+.btn{background:var(--cd);border:1px solid var(--bd);border-radius:8px;padding:7px 14px;font-weight:600;transition:.15s}.btn:hover{border-color:var(--b);box-shadow:0 0 12px #4f8cff44}
+.btn.pr{background:linear-gradient(135deg,var(--b),var(--p));border:0;color:#fff}
+main{padding:22px 24px;flex:1}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-bottom:16px}
+.card{background:linear-gradient(180deg,var(--cd2),var(--cd));border:1px solid var(--bd);border-radius:16px;padding:16px;min-width:0;box-shadow:0 8px 24px var(--sh)}
+.card h3{font-size:14px;font-weight:700}.sub{color:var(--mu);font-size:12px;margin-bottom:10px}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s8{grid-column:span 8}.s12{grid-column:span 12}.s2{grid-column:span 2}
+.kpi{grid-column:span 2;position:relative;overflow:hidden}.kpi:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:var(--k)}
+.kpi small{color:var(--mu);font-size:12px}.kpi b{display:block;font-size:28px;font-weight:800;letter-spacing:-.02em}.kpi span{font-size:11px;color:var(--mu)}
+.cv{position:relative;width:100%}
+.note{border:1px dashed #4f8cff66;background:#4f8cff10;border-radius:12px;padding:8px 14px;font-size:12px;color:var(--nt);margin-bottom:16px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mu);font-weight:600;font-size:12px;cursor:pointer;user-select:none}th:hover{color:var(--tx)}
+tbody tr{cursor:pointer;transition:.12s}tbody tr:hover,tbody tr:focus-visible{background:#4f8cff14}
+td small{display:block;color:var(--mu);font-size:11px}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;border:1px solid}
+.mt{display:inline-block;width:54px;height:6px;border-radius:9px;background:var(--hv2);vertical-align:middle;margin-right:7px;overflow:hidden}.mt i{display:block;height:100%}
+.mtr{position:relative;height:10px;border-radius:9px;background:linear-gradient(90deg,#34d399 0 29%,#fbbf24 29% 59%,#fb923c 59% 79%,#f87171 79%);margin:10px 0}.mtr u{position:absolute;top:-4px;width:4px;height:18px;border-radius:3px;background:var(--tx);box-shadow:0 0 6px var(--tx)}
+.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd);cursor:pointer}.row:last-child{border:0}.row:hover{background:var(--hv)}
+.dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px;flex:none;color:#08101f}
+.row div{min-width:0;flex:1}.row small{display:block;color:var(--mu);font-size:11px}
+.ins{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--bd)}.ins:last-child{border:0}.ins i{font-style:normal;color:var(--c)}
+.tier{border-radius:12px;padding:12px;border:1px solid;font-size:13px}
+.empty{text-align:center;padding:70px 20px;color:var(--mu)}.empty b{display:block;color:var(--tx);font-size:16px;margin-bottom:6px}
+.hm td{text-align:center;font-weight:700}.hm td:first-child{text-align:left}
+.pg{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:12px;color:var(--mu);font-size:12px}
+.ov{position:fixed;inset:0;background:var(--ovl);backdrop-filter:blur(4px);z-index:60;display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:30px 14px}.ov[hidden]{display:none}
+.dlg{background:var(--cd);border:1px solid var(--bd);border-radius:18px;width:min(920px,100%);padding:22px;box-shadow:0 0 60px #4f8cff33;animation:pop .2s}
+@keyframes pop{from{transform:translateY(12px);opacity:0}}
+.st{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.st div{background:var(--hv);border-radius:10px;padding:8px 10px}.st small{color:var(--mu);font-size:11px;display:block}.st b{font-size:15px}
+.bar{height:6px;background:var(--hv2);border-radius:9px;margin-top:3px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--b),var(--p))}
+#toasts{position:fixed;right:16px;bottom:16px;z-index:90;display:flex;flex-direction:column;gap:8px}.toast{background:var(--cd2);border:1px solid var(--b);border-radius:10px;padding:10px 14px;animation:pop .2s;box-shadow:0 0 20px #4f8cff44}
+#load{position:fixed;inset:0;background:var(--bg);z-index:100;display:grid;place-content:center;justify-items:center;gap:14px;transition:opacity .4s;color:var(--mu)}
+.sp{width:44px;height:44px;border-radius:50%;border:3px solid var(--bd);border-top-color:var(--c);border-right-color:var(--p);animation:rot .8s linear infinite}@keyframes rot{to{transform:rotate(1turn)}}
+footer{padding:14px 24px;color:var(--mu);font-size:12px;border-top:1px solid var(--bd);text-align:center}
+@media(max-width:1100px){.kpi{grid-column:span 4}.s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 12}}
+@media(max-width:800px){aside{position:fixed;transform:translateX(-100%)}aside.open{transform:none}#burger{display:block}.kpi{grid-column:span 6}.st{grid-template-columns:repeat(2,1fr)}header,main,.fbar{padding-left:14px;padding-right:14px}.fl select,.fl input{width:130px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body,aside,header,.fbar,select,input,.btn,th,td,.dlg,.card{transition:background-color .3s,border-color .3s,color .3s,box-shadow .3s}
+.card:hover{border-color:color-mix(in srgb,var(--b) 40%,var(--bd))}.kpi{transition:transform .2s,border-color .2s,background-color .3s}.kpi:hover{transform:translateY(-3px)}
+.btn:active{transform:scale(.97)}nav button.on{font-weight:700}tbody tr:hover{box-shadow:inset 2px 0 var(--b)}
+.tg{width:52px;height:28px;border-radius:99px;border:1px solid var(--bd);background:var(--cd);position:relative;padding:0}
+.tg span{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--b),var(--p));display:grid;place-items:center;font-size:12px;color:#fff;transition:transform .3s}
+html[data-theme=light] .tg span{transform:translateX(24px)}
+#glow{position:fixed;left:-270px;top:-270px;width:540px;height:540px;border-radius:50%;pointer-events:none;z-index:40;opacity:0;transition:opacity .5s;background:radial-gradient(circle,var(--gl1) 0,var(--gl2) 40%,transparent 70%);filter:blur(24px);will-change:transform}
+.dz{border:2px dashed var(--bd);border-radius:14px;padding:24px;text-align:center;transition:.2s}
+.dz.over{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,transparent);box-shadow:0 0 24px color-mix(in srgb,var(--c) 30%,transparent)}
+.src{margin-top:18px;padding:12px;text-align:left;border-style:solid;border-width:1px;font-size:12px;background:var(--hv)}.src b{display:block;font-size:13px}.src em{display:block;color:var(--mu);font-style:normal;font-size:11px;margin-top:8px}
+.src .btn{padding:5px 10px;font-size:12px;margin:8px 4px 0 0}.ok{color:var(--g)}.er{color:var(--r)}
+.mp{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;align-items:center;margin:8px 0 14px}.mp select{width:100%}
+@media(max-width:800px){.mp{grid-template-columns:1fr}#upb{display:none}}
+</style></head><body>
+<div id="load"><div class="sp"></div><p>Loading AT-RISK INTELLIGENCE…</p></div>
+<div class="app">
+<aside id="side"><div class="brand"><div class="logo"></div><div><h1>AT-RISK INTELLIGENCE</h1><small>Predict • Detect • Act</small></div></div><nav id="nav"></nav><div id="src" class="src dz"></div></aside>
+<div class="col">
+<header><button id="burger" aria-label="Open menu">☰</button><h2 id="ttl"></h2>
+<div class="seg" id="seg"><button data-m="edu">Education</button><button data-m="corp">Corporate / HR</button></div>
+<select id="rng" aria-label="Time range"><option value="3">Last 3 months</option><option value="6" selected>Last 6 months</option></select><button class="btn pr" id="upb" data-act="upl">⇪ Upload CSV</button><button class="tg" id="thm" aria-label="Toggle dark or light theme" aria-pressed="false"><span>☾</span></button><div class="av" title="Administrator">AD</div></header>
+<div class="fbar" id="fbar"></div>
+<main id="main"></main>
+<footer>Demo environment • Synthetic data • Analytics for decision support</footer>
+</div></div>
+<div id="mod" class="ov" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt" id="dlg"></div></div>
+<div id="um" class="ov" hidden><div class="dlg" id="udlg" role="dialog" aria-modal="true" aria-labelledby="ut"></div></div>
+<div id="glow" aria-hidden="true"></div>
+<div id="toasts" aria-live="polite"></div>
+<script>
+/* ===== Helpers ===== */
+let GRID='#1a2340',CARDC='#0e1527';const $=s=>document.querySelector(s),cl=(v,a=0,b=100)=>Math.max(a,Math.min(b,v));
+let seed=42,RM=false;const rnd=()=>(seed=(seed*1664525+1013904223)%4294967296)/4294967296;
+const pick=a=>a[Math.floor(rnd()*a.length)],nz=k=>(rnd()-.5)*2*k;
+const avg=(a,f)=>{const v=a.map(f).filter(Number.isFinite);return v.length?v.reduce((s,x)=>s+x,0)/v.length:NaN},sum=(a,f)=>a.reduce((s,p)=>{const v=f(p);return s+(Number.isFinite(v)?v:0)},0),R=Math.round,fp=v=>Number.isFinite(v)?R(v)+'%':'N/A',nf=v=>Number.isFinite(v)?R(v):'N/A',nf1=v=>Number.isFinite(v)?v.toFixed(1):'N/A',esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const corr=(a,f,g)=>{a=a.filter(p=>Number.isFinite(f(p))&&Number.isFinite(g(p)));if(a.length<3)return 0;const mx=avg(a,f),my=avg(a,g);let sxy=0,sx=0,sy=0;a.forEach(p=>{const x=f(p)-mx,y=g(p)-my;sxy+=x*y;sx+=x*x;sy+=y*y});return sxy/Math.sqrt(sx*sy||1)};
+const LV=[['Low','#34d399'],['Moderate','#fbbf24'],['High','#fb923c'],['Critical','#f87171']],level=r=>r>=80?3:r>=60?2:r>=30?1:0;
+const MON=['Jun','Jul','Aug','Sep','Oct','Nov'],RNG=[['0-60','Below 60'],['60-75','60–75'],['75-90','75–90'],['90-101','90 and above']],RK=['att','perf','eng'];
+const lab=(k,v)=>k==='yr'?'Year '+v:k==='sem'?'Sem '+v:v;
+const pill=l=>`<span class="pill" style="color:color-mix(in srgb,${LV[l][1]},var(--tx) var(--pm));border-color:${LV[l][1]}66;background:${LV[l][1]}18">${LV[l][0]}</span>`;
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;$('#toasts').append(t);setTimeout(()=>t.remove(),2600)}
+function groups(d,k){const m={};d.forEach(p=>(m[p[k]]=m[p[k]]||[]).push(p));return Object.keys(m).sort((a,b)=>isNaN(a)?a.localeCompare(b):a-b).map(x=>[x,m[x]])}
+
+/* ===== Risk model (demo weights; not a validated model) ===== */
+const EW=[['Low attendance',.22,p=>(90-p.att)*2.2,'Attendance follow-up'],['Low academic scores',.24,p=>(75-p.perf)*2.4,'Subject tutoring'],['Low engagement',.14,p=>(70-p.eng)*2,'Faculty meeting'],['Assignment backlog',.12,p=>p.back*12,'Assignment support'],['Failed subjects',.14,p=>p.fail*25,'Academic counseling'],['Falling grades',.14,p=>(p.trend[0]-p.trend[5])*6,'Academic counseling']];
+const CW=[['Low performance',.22,p=>(78-p.perf)*2.4,'Training & coaching plan'],['Poor attendance',.12,p=>(92-p.att)*2.5,'Manager check-in'],['Low engagement',.22,p=>(70-p.eng)*2.2,'Engagement follow-up'],['Overtime / workload',.16,p=>p.ot*5,'Workload review'],['Falling performance',.16,p=>(p.trend[0]-p.trend[5])*6,'Manager check-in'],['Tenure / role factors',.12,p=>Number.isFinite(p.ten)?(p.ten<1?45:p.since>=4?60:10):NaN,'Career development discussion']];
+function score(p,W,k,ov){const c=W.map(w=>{const v=w[2](p);return Number.isFinite(v)?cl(v):null}),wa=sum(W.filter((_,i)=>c[i]!==null),w=>w[1]),sc=wa?sum(W,w=>w[1])/wa:0;p.f=W.map((w,i)=>({n:w[0],v:c[i]===null?0:w[1]*c[i]*k*sc,a:w[3]}));p.risk=R(cl(sum(p.f,x=>x.v)));if(Number.isFinite(ov))p.risk=R(cl(ov));p.lv=level(p.risk);
+ const t=[...p.f].sort((a,b)=>b.v-a.v).filter(x=>x.v>=2).slice(0,3);p.top=t.length?t:[{n:'No significant factors',a:'Routine monitoring',v:0}];p.main=p.top[0].n;p.act=p.risk<30?'Routine monitoring':p.top[0].a;p.pri=['Monitor','Monitor','This week','Immediate'][p.lv]}
+
+/* ===== Synthetic data ===== */
+const FN='Aarav Diya Rohan Meera Kabir Ananya Vikram Isha Arjun Naina Dev Sara Kunal Tara Neil Riya Yash Zoya Farhan Pooja Sameer Leela Ishaan Mira'.split(' '),LN='Sharma Verma Iyer Khan Reddy Das Mehta Nair Gupta Singh Bose Kapoor Joshi Rao Malik Sinha Pillai Chopra Menon Saxena Bhatt Jain Ghosh Patel'.split(' ');
+const nm=i=>FN[i%24]+' '+LN[(i*7+Math.floor(i/24))%24];
+const EDU_C=['Engineering','Computer Science','Business','Biology','Arts','Mathematics'],DEPT=['Engineering','Sales','Operations','Finance','Customer Support','Marketing','HR'],ROLES=['Associate','Analyst','Specialist','Senior','Manager'],LOC=['Mumbai','Bengaluru','Delhi','Remote'],COST=[4,6,9,14,20];
+const series=(base,s,k,n)=>MON.map((_,i)=>cl(base+(5-i)*s*k+nz(n)));
+function genEdu(){return Array.from({length:120},(_,i)=>{const c=pick(EDU_C),yr=1+Math.floor(rnd()*4),s=cl(Math.pow(rnd(),1.6)+(c==='Engineering'?.12:0)+(yr===1?.05:0),0,1);
+ const att=cl(96-s*45+nz(5)),perf=cl(88-s*50+nz(6)),eng=cl(85-s*50+nz(8)),back=cl(R(s*5+nz(.8)),0,6),fail=s>.55?cl(R((s-.45)*6),0,4):0;
+ const p={id:'S-'+(1001+i),name:nm(i),grp:c,yr,sem:yr*2-(rnd()<.5?1:0),att:R(att),perf:R(perf),eng:R(eng),back,fail,gpa:+(perf/25).toFixed(2),trend:series(perf,(s-.3)*3,1,2).map(R),attT:series(att,s,1.5,1.5).map(R),
+  late:R(s*9+rnd()*3),missed:R((100-att)/100*80),assign:R(cl(100-back*14+nz(4))),lms:R(cl(eng+nz(8))),study:+(1+(1-s)*3+nz(.5)).toFixed(1),lib:R((1-s)*6+rnd()*2),subs:['Mathematics','Core theory','Laboratory','Elective'].map(n=>[n,R(cl(perf+nz(10)))])};
+ score(p,EW,1.25);return p})}
+function genCorp(){return Array.from({length:120},(_,i)=>{const d=pick(DEPT),s=cl(Math.pow(rnd(),1.6)+(d==='Customer Support'?.1:0)+(d==='Engineering'?.06:0),0,1),ri=Math.floor(rnd()*5),ten=+(rnd()*8+.3).toFixed(1);
+ const perf=cl(86-s*45+nz(5)),att=cl(97-s*22+nz(3)),eng=cl(82-s*50+nz(7)),hrs=+(40+s*14+nz(2)).toFixed(1);
+ const p={id:'E-'+(2001+i),name:nm(i+31),grp:d,role:ROLES[ri],loc:pick(LOC),ten,band:ri+1,crit:ri>=3,since:+(rnd()*Math.min(ten,6)).toFixed(1),promos:Math.floor(ten/2.5),band_t:ten<1?'Under 1 yr':ten<3?'1–3 yrs':ten<5?'3–5 yrs':'5+ yrs',
+  perf:R(perf),att:R(att),eng:R(eng),hrs,ot:Math.max(0,hrs-40),prod:R(cl(perf-s*8+nz(4))),goal:R(cl(perf+nz(8))),proj:R(cl(perf+nz(8))),qual:R(cl(perf+nz(6))),sat:R(cl(eng+nz(6))),train:R(cl(75-s*40+nz(10))),tasks:R(cl(100-s*35+nz(5))),abs:R((100-att)/100*220),
+  trend:series(perf,(s-.3)*3,1,2).map(R),attT:series(att,s,.8,1.2).map(R)};
+ score(p,CW,1.35);return p})}
+let DATA={},DEMO={},up=null,curId=null;const initData=()=>{DEMO={edu:genEdu(),corp:genCorp()};DATA={...DEMO};up=null};
+
+/* ===== Config ===== */
+const CFG={edu:{one:'Student',many:'Students',dims:[['grp','Course'],['yr','Year'],['sem','Semester']],
+ f:[['Course','grp',EDU_C.map(x=>[x,x])],['Year','yr',[1,2,3,4].map(x=>[x,'Year '+x])],['Semester','sem',[1,2,3,4,5,6,7,8].map(x=>[x,'Sem '+x])],['Risk level','lv',LV.map((l,i)=>[i,l[0]])],['Attendance','att',RNG],['Performance','perf',RNG]],
+ cols:[['Student','name'],['Course','grp'],['Year','yr'],['GPA','gpa'],['Attendance','att'],['Performance','perf'],['Risk Score','risk'],['Risk Level','lv'],['Action','act']],ax:['eng','Engagement %','perf','Academic performance %']},
+ corp:{one:'Employee',many:'Employees',dims:[['grp','Department'],['role','Role'],['loc','Location']],
+ f:[['Department','grp',DEPT.map(x=>[x,x])],['Role','role',ROLES.map(x=>[x,x])],['Tenure','band_t',['Under 1 yr','1–3 yrs','3–5 yrs','5+ yrs'].map(x=>[x,x])],['Risk level','lv',LV.map((l,i)=>[i,l[0]])],['Performance','perf',RNG],['Engagement','eng',RNG]],
+ cols:[['Employee','name'],['Department','grp'],['Role','role'],['Performance','perf'],['Attendance','att'],['Engagement','eng'],['Risk Score','risk'],['Risk Level','lv'],['Action','act']],ax:['eng','Engagement %','perf','Performance %']}};
+const NAV=[['overview','Overview','◧'],['students','Students','☺'],['employees','Employees','☻'],['risk','Risk Analysis','△'],['performance','Performance','↗'],['attendance','Attendance','◔'],['insights','Insights','✧'],['reports','Reports','▤'],['settings','Settings','⚙']];
+const TT={overview:'Overview',people:'',risk:'Risk Analysis',performance:'Performance',attendance:'Attendance',insights:'Insights & Intervention Center',reports:'Reports',settings:'Settings'};
+let mode='edu',view='overview',q='',F={edu:Array(6).fill(''),corp:Array(6).fill('')},sort={k:'risk',d:-1},page=0,dimI=0;
+const D=()=>{const C=CFG[mode];return DATA[mode].filter(p=>{if(q&&!(p.name+p.id).toLowerCase().includes(q))return false;return C.f.every(([,k],i)=>{const v=F[mode][i];if(v==='')return true;if(RK.includes(k)){const[a,b]=v.split('-').map(Number);return p[k]>=a&&p[k]<b}return String(p[k])===v})})};
+
+/* ===== Charts ===== */
+const CH={};Chart.defaults.font.family="Manrope,system-ui,sans-serif";Chart.defaults.color='#8a94b4';Chart.defaults.borderColor=GRID;
+function mk(id,type,data,opt={}){const el=document.getElementById(id);if(!el)return;const o={responsive:true,maintainAspectRatio:false,animation:RM?false:{duration:600},...opt};
+ o.plugins={legend:{display:data.datasets.length>1||type==='doughnut',position:'bottom',labels:{usePointStyle:true,boxWidth:8}},...(opt.plugins||{})};CH[id]=new Chart(el,{type,data,options:o})}
+const killCharts=()=>{Object.values(CH).forEach(c=>c.destroy());for(const k in CH)delete CH[k]};
+const grad=(c1,c2,h)=>c=>{const a=c.chart.chartArea;if(!a)return c1;const g=c.chart.ctx.createLinearGradient(h?a.left:0,h?0:a.bottom,h?a.right:0,h?0:a.top);g.addColorStop(0,c1);g.addColorStop(1,c2);return g};
+const area=col=>c=>{const a=c.chart.chartArea;if(!a)return col+'22';const g=c.chart.ctx.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,col+'55');g.addColorStop(1,col+'00');return g};
+const lineSet=(l,data,col,fill)=>({label:l,data,borderColor:col,backgroundColor:fill?area(col):col,fill:!!fill,tension:.35,pointRadius:3,borderWidth:2.5,spanGaps:true});
+const nRng=()=>+$('#rng').value,lbls=()=>MON.slice(-nRng());
+const trAvg=(d,key)=>MON.map((_,k)=>d.length?+avg(d,p=>p[key][k]).toFixed(1):null).slice(-nRng());
+const cv=(id,h)=>`<div class="cv" style="height:${h}px"><canvas id="${id}"></canvas></div>`;
+const card=(t,s,b,c='s6')=>`<div class="card ${c}"><h3>${t}</h3><div class="sub">${s||''}</div>${b}</div>`;
+const note=()=>`<div class="note">${up?esc(up.rs)+'. This is a demonstration heuristic, not a scientifically validated prediction. Uploaded data stays in your browser.':'Demonstration analytics model using synthetic data. Risk scores are a weighted heuristic for decision support, not a scientifically validated prediction.'}</div>`;
+const gscale={x:{grid:{display:false}},y:{beginAtZero:true,grid:{get color(){return GRID}}}};
+
+/* ===== Reusable blocks ===== */
+function factorTotals(d){const C=mode==='edu'?EW:CW,t=C.map((w,i)=>[w[0],sum(d,p=>p.f[i].v)]),T=sum(t,x=>x[1])||1;return t.map(x=>[x[0],+(x[1]/T*100).toFixed(1)]).sort((a,b)=>b[1]-a[1])}
+const donut=(id,d)=>mk(id,'doughnut',{labels:LV.map(l=>l[0]),datasets:[{data:LV.map((_,i)=>d.filter(p=>p.lv===i).length),backgroundColor:LV.map(l=>l[1]),borderColor:CARDC,borderWidth:3}]},{cutout:'68%'});
+function factorChart(id,d){const f=factorTotals(d);mk(id,'bar',{labels:f.map(x=>x[0]),datasets:[{data:f.map(x=>x[1]),backgroundColor:grad('#4f8cff','#f472b6',true),borderRadius:6}]},{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'% of total risk contribution'}}},scales:{x:{grid:{color:GRID},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}}})}
+function scatter(id,d){const[xk,xl,yk,yl]=CFG[mode].ax;mk(id,'scatter',{datasets:LV.map((l,i)=>({label:l[0],data:d.filter(p=>p.lv===i).map(p=>({x:mode==='edu'?p.att:p[xk],y:p[yk],n:p.name,r:p.risk})),backgroundColor:l[1]+(i>1?'dd':'88'),pointRadius:i>1?5:3.5}))},
+ {plugins:{tooltip:{callbacks:{label:c=>`${c.raw.n}: ${c.raw.x}%, ${c.raw.y}% (risk ${c.raw.r})`}}},scales:{x:{title:{display:true,text:mode==='edu'?'Attendance %':xl},grid:{color:GRID}},y:{title:{display:true,text:yl},grid:{color:GRID}}}})}
+function dimBar(id,d,k,key,title){const g=groups(d,k);mk(id,'bar',{labels:g.map(x=>lab(k,x[0])),datasets:[{label:title,data:g.map(x=>+avg(x[1],p=>p[key]).toFixed(1)),backgroundColor:key==='risk'?g.map(x=>LV[level(avg(x[1],p=>p.risk))][1]+'cc'):grad('#22d3ee','#9b6bff'),borderRadius:6}]},{plugins:{legend:{display:false}},scales:gscale})}
+function ivList(d,n){const L=[...d].sort((a,b)=>b.risk-a.risk).slice(0,n);return L.map(p=>`<div class="row" tabindex="0" data-id="${p.id}"><span class="dot" style="background:${LV[p.lv][1]}">${p.risk}</span><div><b>${p.name}</b><small>${p.main} → ${p.act}</small></div>${pill(p.lv)}<small style="width:62px;text-align:right">${p.pri}</small></div>`).join('')}
+function kpis(d){const hi=d.filter(p=>p.risk>=60),dec=d.filter(p=>p.trend[0]-p.trend[5]>=5),k=(l,v,s,c)=>`<div class="card kpi" style="--k:${c}"><small>${l}</small><b>${v}</b><span>${s}</span></div>`,pc=n=>d.length?R(n/d.length*100)+'%':'0%';
+ if(mode==='edu')return k('Total Students',d.length,'in current selection','var(--b)')+k('Students At Risk',hi.length,pc(hi.length)+' High or Critical','var(--r)')+k('Average Attendance',fp(avg(d,p=>p.att)),'across selection','var(--c)')+k('Avg Academic Score',fp(avg(d,p=>p.perf)),'mean exam performance','var(--p)')+k('Declining Performance',dec.length,'score drop of 5+ pts','var(--a)')+k('Intervention Required',d.filter(p=>p.lv===3).length,'Critical risk level','var(--pk)');
+ const at=d.filter(p=>p.risk>=50&&p.eng<55);return k('Total Employees',d.length,'in current selection','var(--b)')+k('Employees At Risk',hi.length,pc(hi.length)+' High or Critical','var(--r)')+k('Average Performance',fp(avg(d,p=>p.perf)),'mean performance score','var(--p)')+k('Average Attendance',fp(avg(d,p=>p.att)),'across selection','var(--c)')+k('Attrition Risk',pc(at.length),at.length+' flagged (risk 50+, low engagement)','var(--a)')+k('Productivity Index',nf(avg(d,p=>p.prod)),'0–100 composite','var(--g)')}
+
+/* ===== Insights & impact (computed from the dataset) ===== */
+function insights(d){const C=CFG[mode],o=[],hi=d.filter(p=>p.risk>=60),xk=mode==='edu'?'att':'eng',r=corr(d,p=>p[xk],p=>p.perf),
+ str=Math.abs(r)>=.7?'strong':Math.abs(r)>=.4?'moderate':'weak',g=groups(d,'grp').map(([n,a])=>[n,a.filter(p=>p.risk>=60).length,a.length]).sort((a,b)=>b[1]/b[2]-a[1]/a[2]||b[1]-a[1])[0],f=factorTotals(d)[0];
+ if(d.filter(p=>Number.isFinite(p[xk])&&Number.isFinite(p.perf)).length>=3)o.push(`${mode==='edu'?'Attendance':'Engagement'} shows a ${str} ${r>=0?'positive':'negative'} association with ${mode==='edu'?'academic':'job'} performance in the current sample (r = ${r.toFixed(2)}).`);
+ o.push(`${g[0]} has the highest concentration of high-risk ${C.many.toLowerCase()}: ${g[1]} of ${g[2]} (${R(g[1]/g[2]*100)}%).`);
+ o.push(`${f[0]} is the largest contributor to risk scores, at ${f[1]}% of total contribution.`);
+ if(mode==='edu'){const s=hi.filter(p=>p.att<75).length;o.push(`${hi.length?R(s/hi.length*100):0}% of high-risk students (${s} of ${hi.length}) have attendance below 75%.`)}
+ else{const s=hi.filter(p=>p.trend[0]-p.trend[5]>=5&&p.eng<60).length;o.push(`Employees with declining performance and low engagement account for ${hi.length?R(s/hi.length*100):0}% of the high-risk group (${s} of ${hi.length}).`)}
+ const t=avg(d,p=>p.trend[5])-avg(d,p=>p.trend[0]);if(Number.isFinite(t))o.push(`Average performance ${t>=0?'rose':'fell'} by ${Math.abs(t).toFixed(1)} points over the six months shown.`);
+ o.push(`${d.filter(p=>p.lv===3).length} ${C.many.toLowerCase()} are at Critical level; the average risk score is ${R(avg(d,p=>p.risk))}.`);return o}
+function impact(d){const hi=d.filter(p=>p.risk>=60),m=(l,v,s)=>`<div class="card s2" style="grid-column:span 2"><small style="color:var(--mu)">${l}</small><b style="display:block;font-size:20px">${v}</b><span class="sub">${s}</span></div>`;
+ if(mode==='edu')return m('Classes missed',sum(d,p=>p.missed).toLocaleString(),'total, estimated')+m('With failed subjects',d.filter(p=>p.fail>0).length,'students')+m('Possible repeat risk',d.filter(p=>p.fail>=2).length,'2+ failed subjects')+m('Avg assignment backlog',nf1(avg(d,p=>p.back)),'per student')+m('Late arrivals',sum(d,p=>p.late),'this term')+m('Low engagement',d.filter(p=>p.eng<50).length,'under 50% engagement');
+ const g=groups(d,'grp').map(([n,a])=>[n,avg(a,p=>p.risk)]).sort((a,b)=>b[1]-a[1])[0];
+ return m('Est. productivity impact','~'+(avg(d,p=>p.risk)*.22).toFixed(1)+'%','of capacity, illustrative')+m('Turnover exposure','₹'+R(sum(hi,p=>COST[p.band-1]*.5))+' L','replacement cost, illustrative')+m('High-risk employees',hi.length,R(hi.length/(d.length||1)*100)+'% of selection')+m('Highest-risk department',g[0],'avg score '+R(g[1]))+m('Absence impact',sum(d,p=>p.abs).toLocaleString(),'person-days / year, est.')+m('Critical roles at risk',d.filter(p=>p.crit&&p.risk>=60).length,'Senior / Manager level')}
+
+/* ===== Views ===== */
+const empty=`<div class="card empty"><b>No records match these filters</b>Adjust or reset the filters to see data again.<br><br><button class="btn pr" data-act="reset">Reset filters</button></div>`;
+const V={
+overview(d){const C=CFG[mode];$('#main').innerHTML=note()+`<div class="grid">${kpis(d)}</div><div class="grid">${card('Risk distribution','Share by risk level',cv('c1',250),'s4')}${card('Average performance trend','All vs. high-risk (60+)',cv('c2',250),'s8')}${card('Average risk by '+C.dims[0][1].toLowerCase(),'Bar colour shows the group’s risk level',cv('c3',250))}${card('Risk factors','Share of total risk contribution',cv('c4',250))}${card(mode==='edu'?'Academic performance vs. attendance':'Performance vs. engagement','Each dot is one person; colour = risk level',cv('c5',300),'s7')}${card('Intervention priorities','Highest scores first — select a name for the profile',ivList(d,6),'s5')}</div>`;
+ donut('c1',d);mk('c2','line',{labels:lbls(),datasets:[lineSet('All',trAvg(d,'trend'),'#4f8cff',true),lineSet('High risk',trAvg(d.filter(p=>p.risk>=60),'trend'),'#f87171')]},{scales:{y:{grid:{color:GRID}},x:{grid:{display:false}}}});dimBar('c3',d,'grp','risk','Avg risk');factorChart('c4',d);scatter('c5',d)},
+people(d){const C=CFG[mode],k=sort.k;d=[...d].sort((a,b)=>(typeof a[k]==='string'?a[k].localeCompare(b[k]):a[k]-b[k])*sort.d);const pages=Math.max(1,Math.ceil(d.length/12));page=Math.min(page,pages-1);
+ const cell=(p,k)=>k==='name'?`<b>${p.name}</b><small>${p.id}</small>`:RK.includes(k)?fp(p[k]):k==='risk'?`<span class="mt"><i style="width:${p.risk}%;background:${LV[p.lv][1]}"></i></span>${p.risk}`:k==='lv'?pill(p.lv):k==='yr'?'Year '+p.yr:(typeof p[k]==='number'&&!Number.isFinite(p[k])?'N/A':p[k]);
+ $('#main').innerHTML=note()+card(C.many+' ('+d.length+')','Click a column to sort. Press Enter on a row to open the profile.',`<div class="tw"><table><thead><tr>${C.cols.map(c=>`<th data-k="${c[1]}" tabindex="0">${c[0]}${sort.k===c[1]?(sort.d>0?' ▲':' ▼'):''}</th>`).join('')}</tr></thead><tbody>${d.slice(page*12,page*12+12).map(p=>`<tr tabindex="0" data-id="${p.id}">${C.cols.map(c=>`<td>${cell(p,c[1])}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="pg"><button class="btn" data-pg="-1" ${page?'':'disabled'}>Previous</button>Page ${page+1} of ${pages}<button class="btn" data-pg="1" ${page<pages-1?'':'disabled'}>Next</button></div>`,'s12').replace('class="card s12"','class="card"')},
+risk(d){const C=CFG[mode],[dk,dn]=C.dims[dimI],g=groups(d,dk);
+ $('#main').innerHTML=note()+`<div class="grid">${card('Risk distribution','All levels',cv('r1',250),'s4')}${card('Risk factor analysis','What drives elevated scores',cv('r2',250),'s8')}${card('Risk levels by '+dn.toLowerCase(),`<select id="dim">${C.dims.map((x,i)=>`<option value="${i}" ${i===dimI?'selected':''}>${x[1]}</option>`).join('')}</select>`,cv('r3',280),'s7')}${card('Heatmap: '+dn.toLowerCase()+' × risk level','Number of people; darker means more',`<div class="tw"><table class="hm"><thead><tr><th>${dn}</th>${LV.map(l=>`<th>${l[0]}</th>`).join('')}</tr></thead><tbody>${g.map(([n,a])=>`<tr><td>${lab(dk,n)}</td>${LV.map((l,i)=>{const c=a.filter(p=>p.lv===i).length;return `<td style="background:${l[1]}${Math.min(99,10+R(c/(a.length||1)*160)).toString(16).padStart(2,'0')}">${c}</td>`}).join('')}</tr>`).join('')}</tbody></table></div>`,'s5')}${card('Risk score distribution','People per 10-point band',cv('r4',220),'s12')}</div>`;
+ donut('r1',d);factorChart('r2',d);mk('r3','bar',{labels:g.map(x=>lab(dk,x[0])),datasets:LV.map((l,i)=>({label:l[0],data:g.map(x=>x[1].filter(p=>p.lv===i).length),backgroundColor:l[1],borderRadius:3}))},{scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:GRID}}}});
+ const bins=Array.from({length:10},(_,i)=>d.filter(p=>Math.min(9,Math.floor(p.risk/10))===i).length);mk('r4','bar',{labels:bins.map((_,i)=>i*10+'–'+(i*10+9)),datasets:[{data:bins,backgroundColor:bins.map((_,i)=>LV[level(i*10+5)][1]+'cc'),borderRadius:4}]},{plugins:{legend:{display:false}},scales:gscale})},
+performance(d){const C=CFG[mode],dec=[...d].sort((a,b)=>(b.trend[0]-b.trend[5])-(a.trend[0]-a.trend[5])).slice(0,6);
+ $('#main').innerHTML=note()+`<div class="grid">${card('Performance trend','Average score by month',cv('p1',270),'s8')}${card('Largest declines','Drop in score over six months',dec.map(p=>`<div class="row" tabindex="0" data-id="${p.id}"><span class="dot" style="background:${LV[p.lv][1]}">${p.trend[5]}</span><div><b>${p.name}</b><small>${p.trend[0]} → ${p.trend[5]} (${p.trend[5]-p.trend[0]})</small></div></div>`).join(''),'s4')}${card('Average performance by '+C.dims[0][1].toLowerCase(),'',cv('p2',250))}${card(mode==='edu'?'Score distribution':'Productivity by '+C.dims[0][1].toLowerCase(),'',cv('p3',250))}</div>`;
+ mk('p1','line',{labels:lbls(),datasets:[lineSet('All',trAvg(d,'trend'),'#4f8cff',true),lineSet('Not at risk (<60)',trAvg(d.filter(p=>p.risk<60),'trend'),'#34d399'),lineSet('High risk (60+)',trAvg(d.filter(p=>p.risk>=60),'trend'),'#f87171')]},{scales:{y:{grid:{color:GRID}},x:{grid:{display:false}}}});dimBar('p2',d,'grp','perf','Avg performance');
+ if(mode==='edu'){const b=Array.from({length:10},(_,i)=>d.filter(p=>Math.min(9,Math.floor(p.perf/10))===i).length);mk('p3','bar',{labels:b.map((_,i)=>i*10+'s'),datasets:[{data:b,backgroundColor:grad('#9b6bff','#f472b6'),borderRadius:4}]},{plugins:{legend:{display:false}},scales:gscale})}else dimBar('p3',d,'grp','prod','Avg productivity')},
+attendance(d){const C=CFG[mode],low=[...d].sort((a,b)=>a.att-b.att).slice(0,6);
+ $('#main').innerHTML=note()+`<div class="grid">${card('Attendance trend','Average % by month',cv('a1',270),'s8')}${card('Lowest attendance','Follow-up candidates',low.map(p=>`<div class="row" tabindex="0" data-id="${p.id}"><span class="dot" style="background:${LV[p.lv][1]}">${p.att}</span><div><b>${p.name}</b><small>${mode==='edu'?p.missed+' classes missed, '+p.late+' late':p.abs+' absence days/yr (est.)'}</small></div></div>`).join(''),'s4')}${card('Average attendance by '+C.dims[0][1].toLowerCase(),'',cv('a2',250))}${card('Attendance by '+C.dims[1][1].toLowerCase(),'',cv('a3',250))}</div>`;
+ mk('a1','line',{labels:lbls(),datasets:[lineSet('All',trAvg(d,'attT'),'#22d3ee',true),lineSet('High risk (60+)',trAvg(d.filter(p=>p.risk>=60),'attT'),'#f87171')]},{scales:{y:{grid:{color:GRID}},x:{grid:{display:false}}}});dimBar('a2',d,'grp','att','Avg attendance');dimBar('a3',d,C.dims[1][0],'att','Avg attendance')},
+insights(d){const i=insights(d),c=(l,n)=>d.filter(p=>p.lv===l).length;
+ $('#main').innerHTML=note()+`<div class="grid">${card('Insights','Calculated from the current selection',i.map(t=>`<div class="ins"><i>✧</i><span>${t}</span></div>`).join(''),'s12')}</div>
+ <h3 style="margin:6px 0 8px">${mode==='edu'?'Academic impact indicators':'Business impact'}</h3><div class="sub">Illustrative estimates based on synthetic demo data, not financial predictions.</div><div class="grid">${impact(d)}</div>
+ <h3 style="margin:6px 0 8px">Intervention Center</h3><div class="grid">
+ <div class="tier s4" style="grid-column:span 4;border-color:#f8717166;background:#f8717112">🔴 <b>Critical</b><br>${c(3)} ${CFG[mode].many.toLowerCase()} may need immediate ${mode==='edu'?'academic':'manager'} attention.</div>
+ <div class="tier" style="grid-column:span 4;border-color:#fb923c66;background:#fb923c12">🟠 <b>High</b><br>${c(2)} ${CFG[mode].many.toLowerCase()} show elevated ${mode==='edu'?'academic':'attrition / performance'} risk.</div>
+ <div class="tier" style="grid-column:span 4;border-color:#fbbf2466;background:#fbbf2412">🟡 <b>Moderate</b><br>${c(1)} people show early warning indicators.</div>
+ ${card('Priority list','Suggested actions are starting points for a human review, not guaranteed solutions',`<div class="tw"><table><thead><tr><th>Name</th><th>Risk</th><th>Main issue</th><th>Suggested action</th><th>Priority</th></tr></thead><tbody>${[...d].sort((a,b)=>b.risk-a.risk).slice(0,10).map(p=>`<tr tabindex="0" data-id="${p.id}"><td><b>${p.name}</b></td><td>${pill(p.lv)} ${p.risk}</td><td>${p.main}</td><td>${p.act}</td><td>${p.pri}</td></tr>`).join('')}</tbody></table></div>`,'s12')}</div>`},
+reports(d){const C=CFG[mode],[dk,dn]=C.dims[0];
+ $('#main').innerHTML=note()+card('Summary by '+dn.toLowerCase(),`${d.length} records in the current selection`,`<div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn pr" data-act="csv">Export CSV</button><button class="btn" data-act="print">Print report</button></div><div class="tw"><table><thead><tr><th>${dn}</th><th>Count</th><th>Avg risk</th><th>High / Critical</th><th>Avg performance</th><th>Avg attendance</th></tr></thead><tbody>${groups(d,dk).map(([n,a])=>`<tr><td><b>${n}</b></td><td>${a.length}</td><td>${R(avg(a,p=>p.risk))}</td><td>${a.filter(p=>p.risk>=60).length}</td><td>${fp(avg(a,p=>p.perf))}</td><td>${fp(avg(a,p=>p.att))}</td></tr>`).join('')}</tbody></table></div>`,'s12').replace('class="card s12"','class="card"')},
+settings(){const W=mode==='edu'?EW:CW;
+ $('#main').innerHTML=note()+`<div class="grid">${card('Preferences','',`<label style="display:flex;gap:10px;align-items:center;margin-bottom:14px"><input type="checkbox" id="rm" ${RM?'checked':''}> Reduce chart animation</label><button class="btn pr" data-act="regen">Regenerate synthetic data</button>`,'s5')}${card('Risk model weights ('+CFG[mode].many.toLowerCase()+')','Score = weighted sum of factor severities, scaled to 0–100. Bands: 0–29 Low, 30–59 Moderate, 60–79 High, 80–100 Critical.',`<table><tbody>${W.map(w=>`<tr><td>${w[0]}</td><td>${R(w[1]*100)}%</td><td>${w[3]}</td></tr>`).join('')}</tbody></table>`,'s7')}</div>`}};
+
+/* ===== Profile modal ===== */
+let lastFocus=null;
+function openProfile(id){let p=DATA[mode].find(x=>x.id===id)||[...DATA.edu,...DATA.corp].find(x=>x.id===id);if(!p)return;curId=id;p=Object.fromEntries(Object.entries(p).map(([k,v])=>[k,typeof v==='number'&&!Number.isFinite(v)?'N/A':v]));const ed=p.id[0]==='S';lastFocus=document.activeElement;
+ const st=(l,v,b)=>`<div><small>${l}</small><b>${v}</b>${b!=null?`<div class="bar"><i style="width:${b}%"></i></div>`:''}</div>`;
+ const stats=ed?st('GPA (4.0)',p.gpa,p.gpa*25)+st('Attendance',p.att+'%',p.att)+st('Performance',p.perf+'%',p.perf)+st('Engagement',p.eng+'%',p.eng)+st('Assignments done',p.assign+'%',p.assign)+st('Late arrivals',p.late)+st('Classes missed',p.missed)+st('Failed subjects',p.fail):st('Performance',p.perf+'%',p.perf)+st('Attendance',p.att+'%',p.att)+st('Engagement',p.eng+'%',p.eng)+st('Productivity',p.prod,p.prod)+st('Goal completion',p.goal+'%',p.goal)+st('Quality score',p.qual+'%',p.qual)+st('Hours / week',p.hrs,cl(p.hrs/60*100))+st('Salary band','Band '+p.band);
+ const act=ed?[p.missed+' classes missed this term',p.back+' assignments pending',`LMS activity at ${p.lms}%`,`Study time about ${p.study} h/day, library visits ${p.lib}/month`]:[`Averaging ${p.hrs} hours/week (${Number.isFinite(p.ot)?p.ot.toFixed(1):'N/A'} overtime)`,`${p.abs} absence days per year (estimated)`,`Training participation ${p.train}%`,`Tenure ${p.ten} yrs, ${p.promos} promotion(s), last ${p.since} yrs ago`];
+ $('#dlg').innerHTML=`<div style="display:flex;gap:12px;align-items:center"><span class="dot" style="background:${LV[p.lv][1]};width:46px;height:46px;font-size:16px">${p.name[0]}</span><div style="flex:1"><h3 id="mt" style="font-size:18px">${p.name}</h3><div class="sub" style="margin:0">${p.id} • ${ed?`${p.grp} • Year ${p.yr} • Semester ${p.sem}`:`${p.grp} • ${p.role} • ${p.loc} • ${p.ten} yrs`}</div></div><button class="btn" id="mx" aria-label="Close profile">Close</button></div>
+ <div style="display:flex;align-items:baseline;gap:12px;margin-top:16px"><b style="font-size:40px">${p.risk}</b>${pill(p.lv)}<span class="sub" style="margin:0">Risk score (0–100)</span></div><div class="mtr"><u style="left:calc(${p.risk}% - 2px)"></u></div><div class="st">${stats}</div>
+ <div class="grid" style="margin:0"><div class="card s7">${'<h3>Performance and attendance trend</h3>'}${cv('mc',200)}</div><div class="card s5"><h3>Risk factors</h3><div class="sub">Contribution to the score</div>${[...p.f].sort((a,b)=>b.v-a.v).map(f=>`<div style="font-size:12px;margin-top:6px">${f.n} <b style="float:right">${f.v.toFixed(1)}</b><div class="bar"><i style="width:${Math.min(100,f.v/25*100)}%"></i></div></div>`).join('')}</div></div>
+ <div class="grid" style="margin:16px 0 0"><div class="card s6"><h3>Recent activity</h3>${act.map(a=>`<div class="ins"><i>•</i>${a}</div>`).join('')}${ed&&p.subs.length?`<div class="sub" style="margin-top:8px">Subjects: ${p.subs.map(s=>s[0]+' '+s[1]+'%').join(', ')}</div>`:''}</div>
+ <div class="card s6"><h3>Recommended ${ed?'intervention':'HR action'}</h3><p style="margin:8px 0"><b>${p.act}</b> — priority: ${p.pri}.</p><div class="sub">Main issue: ${p.main}. Suggestions support, and do not replace, human judgement. Demo data and heuristic model.</div></div></div>`;
+ $('#dlg').innerHTML=$('#dlg').innerHTML.replace(/N\/A%/g,'N/A');$('#mod').hidden=false;$('#mx').focus();
+ mk('mc','line',{labels:MON,datasets:[lineSet('Performance',p.trend,'#4f8cff',true),lineSet('Attendance',p.attT,'#22d3ee')]},{scales:{y:{grid:{color:GRID}},x:{grid:{display:false}}}})}
+function closeProfile(){$('#mod').hidden=true;if(CH.mc){CH.mc.destroy();delete CH.mc}lastFocus&&lastFocus.focus()}
+
+/* ===== Rendering & state ===== */
+function render(){const nav=view==='people'?(mode==='edu'?'students':'employees'):view;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===nav));
+ $('#ttl').textContent=view==='people'?CFG[mode].many:TT[view];document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
+ Object.keys(CH).forEach(k=>{if(k!=='mc'){CH[k].destroy();delete CH[k]}});const d=D();if(view!=='settings'&&!d.length){$('#main').innerHTML=emptyHTML();return}V[view](d)}
+function renderFilters(){const C=CFG[mode];$('#fbar').innerHTML=`<label class="fl">Search<input type="search" id="q" placeholder="Name or ID" value="${q}"></label>`+C.f.map(([l,k,o0],i)=>{const o=fo(k,o0);return `<label class="fl">${l}<select data-i="${i}"><option value="">All</option>${o.map(x=>`<option value="${x[0]}" ${String(x[0])===F[mode][i]?'selected':''}>${x[1]}</option>`).join('')}</select></label>`}).join('')+`<button class="btn" data-act="reset">Reset filters</button>`}
+function reset(){F={edu:Array(6).fill(''),corp:Array(6).fill('')};q='';page=0;renderFilters();render();toast('Filters reset')}
+function setMode(m){if(m===mode)return;mode=m;page=0;sort={k:'risk',d:-1};dimI=0;renderFilters();render();toast('Switched to '+(m==='edu'?'Education':'Corporate / HR')+' mode')}
+function go(v){if(v==='students')setMode('edu');if(v==='employees')setMode('corp');view=v==='students'||v==='employees'?'people':v;page=0;$('#side').classList.remove('open');render();scrollTo(0,0)}
+function csv(){const d=D(),C=CFG[mode],h=['ID','Name',...C.dims.map(x=>x[1]),'Performance','Attendance','Engagement','Risk Score','Risk Level','Main issue','Action'],
+ rows=d.map(p=>[p.id,p.name,...C.dims.map(x=>p[x[0]]),p.perf,p.att,p.eng,p.risk,LV[p.lv][0],p.main,p.act].map(v=>`"${v}"`).join(','));
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([[h.join(','),...rows].join('\n')],{type:'text/csv'}));a.download='at-risk-'+mode+'.csv';a.click();toast('Exported '+d.length+' records')}
+
+/* ===== Events ===== */
+$('#nav').innerHTML=NAV.map(n=>`<button data-v="${n[0]}"><i>${n[2]}</i>${n[1]}</button>`).join('');
+$('#nav').onclick=e=>{const b=e.target.closest('button');b&&go(b.dataset.v)};
+$('#seg').onclick=e=>{const b=e.target.closest('button');b&&setMode(b.dataset.m)};
+$('#rng').onchange=render;$('#burger').onclick=()=>$('#side').classList.toggle('open');
+$('#fbar').addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value.trim().toLowerCase();page=0;render()}});
+$('#fbar').addEventListener('change',e=>{const i=e.target.dataset.i;if(i!==undefined){F[mode][i]=e.target.value;page=0;render()}});
+$('#fbar').addEventListener('click',e=>{if(e.target.dataset.act==='reset')reset()});
+document.addEventListener('click',e=>{const t=e.target,a=t.closest('[data-act]');if(a){const k=a.dataset.act;k==='reset'?reset():k==='csv'?csv():k==='print'?print():k==='regen'&&(seed=R(Math.random()*1e6),initData(),renderFilters(),render(),renderSrc(),toast('Synthetic data regenerated'));return}
+ const pg=t.closest('[data-pg]');if(pg){page+=+pg.dataset.pg;render();return}const th=t.closest('th[data-k]');if(th){const k=th.dataset.k;sort={k,d:sort.k===k?-sort.d:(typeof DATA[mode][0][k]==='string'?1:-1)};render();return}
+ const r=t.closest('[data-id]');if(r){openProfile(r.dataset.id);return}if(t.id==='mx'||t.id==='mod')closeProfile()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#mod').hidden)closeProfile();if(e.key==='Enter'){const r=e.target.closest&&e.target.closest('[data-id],th[data-k]');if(r)r.click()}});
+document.addEventListener('change',e=>{if(e.target.id==='dim'){dimI=+e.target.value;render()}if(e.target.id==='rm'){RM=e.target.checked;toast(RM?'Animations reduced':'Animations on')}});
+
+/* ===== Theme ===== */
+function applyTheme(t,quiet){const L=t==='light';document.documentElement.dataset.theme=t;GRID=L?'#e6eaf4':'#1a2340';CARDC=L?'#ffffff':'#0e1527';
+ Chart.defaults.color=L?'#5b6788':'#8a94b4';Chart.defaults.borderColor=GRID;const tp=Chart.defaults.plugins.tooltip;tp.backgroundColor=L?'#ffffff':'#111a31';tp.titleColor=tp.bodyColor=L?'#141b34':'#e7ebf8';tp.borderColor=L?'#d5dcec':'#1b2542';tp.borderWidth=1;tp.padding=10;
+ const b=$('#thm');b.setAttribute('aria-pressed',L);b.firstElementChild.textContent=L?'☀':'☾';if(!quiet){render();if(!$('#mod').hidden&&curId)openProfile(curId)}}
+$('#thm').onclick=()=>{const t=document.documentElement.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('ari-theme',t)}catch(e){}applyTheme(t)};
+
+/* ===== Cursor glow (disabled on touch devices) ===== */
+(function(){const g=$('#glow');if(!g)return;if(matchMedia('(hover:none),(pointer:coarse)').matches){g.remove();return}
+ let tx=0,ty=0,x=0,y=0,raf=0;const step=()=>{x+=(tx-x)*.12;y+=(ty-y)*.12;g.style.transform=`translate3d(${x}px,${y}px,0)`;raf=Math.abs(tx-x)>.5||Math.abs(ty-y)>.5?requestAnimationFrame(step):0};
+ addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;tx=e.clientX;ty=e.clientY;if(g.style.opacity!=='1'){x=tx;y=ty;g.style.opacity=1}if(!raf)raf=requestAnimationFrame(step)},{passive:true});
+ document.addEventListener('mouseleave',()=>{g.style.opacity=0})})();
+
+/* ===== CSV upload ===== */
+const A={att:['attendance','attendancepercentage','attendancepercent','presentpercentage','attendancerate'],perf:['performance','performancescore','academicscore','examscore','overallscore','score','marks'],eng:['engagement','engagementscore','participation','engagementpercentage'],risk:['riskscore','risk'],lvl:['risklevel','riskcategory']};
+const FD={edu:[['name','Name',['name','studentname','fullname','personname','student']],['id','Student ID',['id','studentid','rollno','rollnumber','enrollmentno']],['grp','Course',['course','program','programme','branch','stream','department','dept','division']],['yr','Year',['year','academicyear','studyyear']],['sem','Semester',['semester','sem']],['att','Attendance',A.att],['perf','Performance',A.perf],['gpa','GPA',['gpa','cgpa','gradepointaverage']],['eng','Engagement',A.eng],['assign','Assignment completion',['assignmentcompletion','assignments','assignmentscore','assignmentcompletionrate']],['back','Assignment backlog',['assignmentbacklog','pendingassignments']],['fail','Failed subjects',['failedsubjects','failures','backlogs','arrears']],['late','Late arrivals',['latearrivals','lates']],['missed','Classes missed',['classesmissed','absences']],['risk','Risk score',A.risk],['lvl','Risk level',A.lvl]],
+ corp:[['name','Name',['name','employeename','fullname','personname','employee']],['id','Employee ID',['id','employeeid','empid','employeenumber']],['grp','Department',['department','dept','division','team']],['role','Role',['role','jobtitle','designation','position','jobrole']],['loc','Location',['location','city','office']],['att','Attendance',A.att],['perf','Performance',A.perf],['eng','Engagement',A.eng],['prod','Productivity',['productivity','productivityscore','productivityindex']],['hrs','Working hours / week',['workinghours','hoursperweek','weeklyhours','workload','hours']],['ot','Overtime hours',['overtime','overtimehours']],['ten','Tenure (years)',['tenure','tenureyears','yearsatcompany','yearsofservice']],['sal','Salary band (1–5)',['salaryband','band','paygrade']],['goal','Goal completion',['goalcompletion','goals']],['risk','Risk score',A.risk],['lvl','Risk level',A.lvl]]};
+const norm=t=>String(t).toLowerCase().replace(/[^a-z0-9]/g,''),METRIC=['att','perf','eng','gpa','prod'],GENERIC='Unable to read this CSV. Please check that the file contains valid column headers and rows.';
+let us=null,ulast=null;
+function autoMap(h,m){const used=new Set(),mp={};FD[m].forEach(([f,,al])=>{let hit;for(const a of al){hit=h.find(x=>!used.has(x)&&norm(x)===a);if(hit)break}
+ if(!hit)for(const a of al){if(a.length<6)continue;hit=h.find(x=>!used.has(x)&&norm(x).includes(a));if(hit)break}if(hit){used.add(hit);mp[f]=hit}});return mp}
+function detect(h){const n=h.map(norm),cnt=k=>n.filter(x=>k.some(w=>x.includes(w))).length,e=cnt(['gpa','cgpa','course','semester','student','exam','assignment','program','branch']),c=cnt(['employee','role','salary','tenure','productivity','attrition','workload','overtime','jobtitle','designation','empid']);
+ return{mode:e>c?'edu':'corp',sure:Math.abs(e-c)>=2||(Math.min(e,c)===0&&Math.max(e,c)>0)}}
+const LVM={low:15,moderate:45,medium:45,high:70,critical:90};
+function buildRecs(rows,mp,m){const ed=m==='edu',gmax=ed&&mp.gpa?Math.max(0,...rows.map(r=>parseFloat(r[mp.gpa])).filter(Number.isFinite)):0,pf=['att','perf','eng','assign','prod','goal','risk'],sc={},seen=new Set(),out=[];
+ pf.forEach(f=>{if(!mp[f])return;let mx=0;rows.forEach(r=>{const v=parseFloat(String(r[mp[f]]).replace(/[%,\s]/g,''));if(Number.isFinite(v))mx=Math.max(mx,v)});sc[f]=mx>0&&mx<=1?100:1});
+ rows.forEach((r,i)=>{const g=f=>mp[f]&&r[mp[f]]!=null?String(r[mp[f]]).trim():'',n=f=>{const t=g(f).replace(/[%,\s]/g,''),v=t===''?NaN:parseFloat(t)*(sc[f]||1);return pf.includes(f)&&(v<0||v>100)?NaN:v},
+  t=f=>esc(g(f)||'Unspecified'),y=f=>{const v=parseInt(g(f).replace(/\D/g,''),10);return Number.isFinite(v)?v:'N/A'},rr=v=>Number.isFinite(v)?R(v):NaN;
+  const att=n('att'),eng=n('eng'),gpa=ed?n('gpa'):NaN;let perf=n('perf');if(!Number.isFinite(perf)&&Number.isFinite(gpa))perf=gmax<=4.5?gpa*25:gmax<=10?gpa*10:NaN;
+  if(!g('name')&&!g('id')&&![att,perf,eng,n('prod')].some(Number.isFinite))return;
+  let id=g('id')||(ed?'S-':'E-')+(1001+i);if(seen.has(id))id+='-'+i;seen.add(id);const base={id:esc(id),name:esc(g('name')||g('id')||'Record '+(i+1)),att:rr(att),perf:rr(perf),eng:rr(eng),trend:Array(6).fill(NaN),attT:Array(6).fill(NaN)};let p;
+  if(ed){let back=n('back');const as=n('assign');if(!Number.isFinite(back)&&Number.isFinite(as))back=(100-as)/100*6;
+   p={...base,grp:t('grp'),yr:y('yr'),sem:y('sem'),gpa:Number.isFinite(gpa)?+gpa.toFixed(2):NaN,back,fail:n('fail'),assign:rr(as),late:n('late'),missed:n('missed'),lms:NaN,study:NaN,lib:NaN,subs:[]}}
+  else{const ten=n('ten'),hrs=n('hrs'),sal=Math.round(n('sal'));
+   p={...base,grp:t('grp'),role:t('role'),loc:t('loc'),ten,band:sal>=1&&sal<=5?sal:NaN,crit:/senior|manager|lead|director|head|vp|chief/i.test(g('role')),since:NaN,promos:NaN,band_t:Number.isFinite(ten)?(ten<1?'Under 1 yr':ten<3?'1–3 yrs':ten<5?'3–5 yrs':'5+ yrs'):'N/A',hrs,ot:Number.isFinite(n('ot'))?n('ot'):Number.isFinite(hrs)?Math.max(0,hrs-40):NaN,prod:rr(n('prod')),goal:rr(n('goal')),proj:NaN,qual:NaN,sat:NaN,train:NaN,tasks:NaN,abs:Number.isFinite(att)?R((100-att)/100*220):NaN}}
+  const rk=n('risk'),ov=Number.isFinite(rk)?rk:(LVM[g('lvl').toLowerCase()]??NaN);score(p,ed?EW:CW,ed?1.25:1.35,ov);p.ov=Number.isFinite(ov);out.push(p)});return out}
+const fo=(k,o0)=>{if(!up||up.mode!==mode||RK.includes(k)||k==='lv')return o0;return[...new Set(DATA[mode].map(p=>p[k]))].sort((a,b)=>isNaN(a)||isNaN(b)?String(a).localeCompare(b):a-b).map(v=>[v,lab(k,v)])};
+const emptyHTML=()=>up&&!DATA[mode].length?`<div class="card empty"><b>The uploaded dataset has no ${mode==='edu'?'students':'employees'}</b>It contains ${up.mode==='edu'?'students':'employees'} only. Switch mode or go back to the demo data.<br><br><button class="btn pr" data-act="swm">Switch to ${up.mode==='edu'?'Education':'Corporate / HR'} mode</button> <button class="btn" data-act="demo">Reset to Demo Data</button></div>`:empty;
+function renderSrc(){$('#src').innerHTML=`<small style="color:var(--mu)">Data source</small><b><span class="${up?'ok':''}" style="${up?'':'color:var(--a)'}">●</span> ${up?'Uploaded Dataset':'Synthetic Demo Data'}</b>${up?`<span>${esc(up.fn)}<br>${up.n} records • ${up.cols} columns</span>`:''}<div><button class="btn pr" data-act="upl">${up?'Replace CSV':'Upload CSV'}</button>${up?'<button class="btn" data-act="demo">Reset to Demo Data</button>':''}</div><em>CSV data is processed locally in your browser for this demo.</em>`}
+const dropHTML=()=>`<div style="display:flex;justify-content:space-between;align-items:center"><h3 id="ut" style="font-size:18px">Upload CSV</h3><button class="btn" data-u="close">Close</button></div><div class="sub">Upload a student or employee dataset. Columns are detected automatically and can be adjusted before continuing.</div><div class="dz" id="udz"><p style="font-size:28px">⇪</p><p><b>Drag &amp; drop a CSV file here</b></p><p class="sub">or</p><button class="btn pr" data-u="browse">Browse files</button><input type="file" id="fi" accept=".csv,text/csv" hidden></div><div id="ust" class="sub" role="status" style="margin-top:10px"></div><div class="sub">CSV data is processed locally in your browser for this demo. Limit: 15 MB and 20,000 rows.</div>`;
+function setSt(msg,err){const e=$('#ust');if(!e)return toast(msg);e.className='sub '+(err?'er':'');e.textContent=msg}
+function openUpload(){ulast=document.activeElement;us=null;$('#udlg').innerHTML=dropHTML();$('#um').hidden=false;$('#udlg button.pr').focus()}
+function closeUpload(){$('#um').hidden=true;ulast&&ulast.focus&&ulast.focus()}
+function handleFile(f){if(!f)return;if($('#um').hidden)openUpload();const bad=m=>setSt(m,1);
+ if(!/\.csv$/i.test(f.name)&&!/csv/i.test(f.type||''))return bad('Please upload a valid CSV file.');
+ if(f.size>15*1048576)return bad('This file is too large for the browser-based demo (limit 15 MB).');if(!f.size)return bad('This CSV contains no usable records.');
+ if(typeof Papa==='undefined')return bad('The CSV reader could not be loaded. Check your internet connection and try again.');
+ setSt('Reading '+f.name+'…');
+ try{Papa.parse(f,{header:true,skipEmptyLines:'greedy',transformHeader:h=>String(h).trim(),error:()=>bad(GENERIC),complete:r=>{try{const h=(r.meta.fields||[]).filter(x=>x),rows=r.data||[];
+  if(h.length<2||!rows.length)return bad(h.length>=2?'This CSV contains no usable records.':GENERIC);if(rows.length>20000)return bad('This file has too many rows for the browser-based demo (limit 20,000).');
+  const d=detect(h);us={fn:f.name,h,rows,mode:d.sure?d.mode:null,sure:d.sure};us.mp=us.mode?autoMap(h,us.mode):{};review()}catch(e){bad(GENERIC)}}})}catch(e){bad(GENERIC)}}
+function upv(){if(!us.mode)return'';const m=us.mode,has=METRIC.some(f=>us.mp[f]);let rows=[];try{rows=buildRecs(us.rows.slice(0,8),us.mp,m)}catch(e){}
+ return`<h3 style="margin-top:6px">Data preview</h3>${has?'':`<div class="sub er">Some required fields could not be detected. Please map at least one of attendance, performance, engagement or GPA manually.</div>`}<div class="tw"><table><thead><tr><th>Name</th><th>Attendance</th><th>Performance</th><th>Engagement</th><th>Risk</th></tr></thead><tbody>${rows.map(p=>`<tr><td>${p.name}</td><td>${fp(p.att)}</td><td>${fp(p.perf)}</td><td>${fp(p.eng)}</td><td>${p.risk}</td></tr>`).join('')||'<tr><td colspan="5">No usable rows with this mapping</td></tr>'}</tbody></table></div><div class="sub" style="margin-top:8px">${us.mp.risk||us.mp.lvl?'Risk score taken from the uploaded column where provided; otherwise calculated from available fields.':'Risk score calculated from available uploaded fields.'} Missing values appear as N/A and are excluded from averages.</div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button class="btn" data-u="back">Back</button><button class="btn pr" data-u="go" ${has?'':'disabled'}>Continue</button></div>`}
+function review(){const m=us.mode;$('#udlg').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><h3 id="ut" style="font-size:18px">Review your data</h3><button class="btn" data-u="close">Close</button></div><div class="sub">${esc(us.fn)} • ${us.rows.length} records • ${us.h.length} columns</div>${us.sure?'<div class="sub ok">Dataset type detected automatically. Check the mapping below.</div>':'<div class="sub er">We couldn\'t identify this dataset. Please choose Students or Employees manually.</div>'}
+ <div style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 14px"><b>What type of dataset is this?</b><label><input type="radio" name="ut" value="edu" ${m==='edu'?'checked':''}> Students</label><label><input type="radio" name="ut" value="corp" ${m==='corp'?'checked':''}> Employees</label></div>
+ ${m?`<h3>Map your CSV</h3><div class="mp">${FD[m].map(([f,l])=>`<label for="mp-${f}">${l}</label><select id="mp-${f}" data-f="${f}"><option value="">— none —</option>${us.h.map(h=>`<option ${us.mp[f]===h?'selected':''}>${esc(h)}</option>`).join('')}</select>`).join('')}</div><div id="upv">${upv()}</div>`:''}`;}
+function applyUpload(){try{const m=us.mode,recs=buildRecs(us.rows,us.mp,m);if(!recs.length)return toast('This CSV contains no usable records.');
+ DATA={edu:[],corp:[],...{[m]:recs}};up={fn:us.fn,n:recs.length,cols:us.h.length,mode:m,rs:recs.some(p=>p.ov)?'Risk score taken from the uploaded column where provided, otherwise calculated from available fields':'Risk score calculated from available uploaded fields'};
+ mode=m;F={edu:Array(6).fill(''),corp:Array(6).fill('')};q='';page=0;dimI=0;sort={k:'risk',d:-1};view=view==='settings'?'overview':view;closeUpload();renderFilters();render();renderSrc();toast('Loaded '+recs.length+' records from '+us.fn)}
+ catch(e){toast('Unable to process this CSV. Please check the column mapping.')}}
+function resetDemo(){DATA={...DEMO};up=null;F={edu:Array(6).fill(''),corp:Array(6).fill('')};q='';page=0;dimI=0;renderFilters();render();renderSrc();toast('Restored synthetic demo data')}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-act]'),u=e.target.closest('[data-u]');
+ if(a){const k=a.dataset.act;if(k==='upl')openUpload();else if(k==='demo')resetDemo();else if(k==='swm')setMode(up.mode)}
+ if(e.target.id==='um')closeUpload();if(!u)return;const k=u.dataset.u;
+ if(k==='close')closeUpload();else if(k==='browse')$('#fi').click();else if(k==='back'){openUpload()}else if(k==='go')applyUpload()});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='fi'){handleFile(t.files[0]);t.value=''}
+ else if(t.name==='ut'&&us){us.mode=t.value;us.mp=autoMap(us.h,t.value);review()}
+ else if(t.dataset.f&&us){us.mp[t.dataset.f]=t.value;$('#upv').innerHTML=upv()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#um').hidden)closeUpload()});
+['dragenter','dragover'].forEach(ev=>addEventListener(ev,e=>{e.preventDefault();const z=e.target.closest&&e.target.closest('.dz');document.querySelectorAll('.dz.over').forEach(x=>x!==z&&x.classList.remove('over'));if(z)z.classList.add('over')}));
+addEventListener('dragleave',e=>{const z=e.target.closest&&e.target.closest('.dz');if(z&&!z.contains(e.relatedTarget))z.classList.remove('over')});
+addEventListener('drop',e=>{e.preventDefault();document.querySelectorAll('.dz.over').forEach(x=>x.classList.remove('over'));if(e.target.closest&&e.target.closest('.dz')&&e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0])});
+
+/* ===== Init ===== */
+initData();applyTheme(document.documentElement.dataset.theme==='light'?'light':'dark',true);renderFilters();render();renderSrc();
+setTimeout(()=>{const l=$('#load');l.style.opacity=0;setTimeout(()=>l.remove(),400)},700);
+</script></body></html>
